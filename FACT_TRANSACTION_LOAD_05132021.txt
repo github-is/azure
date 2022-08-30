@@ -1,0 +1,576 @@
+--
+---Create a Temporary Table to load the incremental data before loading it to FACT
+create temporary table $db_name$."DATA_MART"."FACT_FINANCE_TRANSACTION_TEMP" AS
+select 
+IFNULL(d_dt.DIM_DATE_SK,0) AS DIM_DATE_SK,
+IFNULL(d_acc.DIM_GL_ACC_MASTER_SK,0) AS DIM_GL_ACC_MASTER_SK,
+IFNULL(d_glh_secr.DIM_GL_ACCOUNT_HIER_SK,0) AS DIM_GL_ACCOUNT_HIER_SECR_SK,
+IFNULL(d_glh_edw1.DIM_GL_ACCOUNT_HIER_SK,0) AS DIM_GL_ACCOUNT_HIER_EDW1_SK,
+IFNULL(d_ccr.DIM_COST_CNTR_MASTER_SK,0) AS DIM_COST_CNTR_MASTER_SK,
+0 AS DIM_COST_CNTR_HIER_SK,--s_tran.DIM_COST_CNTR_HIER_SK,
+IFNULL(d_cus.DIM_CUST_SK,0) AS DIM_CUST_SK,
+0 AS DIM_CUST_SALES_SK,--s_tran.DIM_CUST_SALES_SK,
+0 AS DIM_CUST_COMPC_SK,--s_tran.DIM_CUST_COMPC_SK,
+IFNULL(d_ven.DIM_VENDOR_SK,0) AS DIM_VENDOR_SK,
+0 AS DIM_VENDOR_COMPC_SK,--s_tran.DIM_VENDOR_COMPC_SK,
+0 AS DIM_WBS_ELMNT_MASTER_SK,--s_tran.DIM_WBS_ELMNT_MASTER_SK,
+0 AS DIM_MAT_MASTER_SK,--s_tran.DIM_MAT_MASTER_SK,
+0 AS DIM_MAT_SALES_SK,--s_tran.DIM_MAT_SALES_SK,
+0 AS DIM_MAT_PLANT_SK,--s_tran.DIM_MAT_PLANT_SK,
+IFNULL(d_ccd.DIM_COMPANY_CD_SK,0) AS DIM_COMPANY_CD_SK,
+IFNULL(d_pcr.DIM_PROFIT_CTR_TEXT_SK,0) AS DIM_PROFIT_CTR_TEXT_SK,
+IFNULL(d_hd.DIM_FI_DOC_HEADER_SK,0) AS DIM_FI_DOC_HEADER_SK,
+s_tran.KOKRS,
+s_tran.RCNTR,
+s_tran.PERIV,
+s_tran.FISCYEARPER,
+s_tran.BLART,
+s_tran.RBUKRS,
+s_tran.GJAHR,
+s_tran.BELNR,
+s_tran.DOCLN,
+s_tran.CURTYPE,
+s_tran.KTOPL,
+s_tran.RACCT,
+s_tran.KUNNR,
+s_tran.VKORG,
+s_tran.VTWEG,
+s_tran.SPART,
+s_tran.LIFNR,
+s_tran.PS_POSID,
+s_tran.PS_PSPID,
+s_tran.MATNR,
+s_tran.WERKS,
+s_tran.ACCAS,
+s_tran.ACCASTY,
+s_tran.AFABE,
+s_tran.ANBWA,
+s_tran.ANLN1,
+s_tran.ANLN2,
+s_tran.AUFNR,
+s_tran.AUGBL,
+s_tran.AUGDT,
+s_tran.AUGGJ,
+s_tran.AUTYP,
+s_tran.AWITEM,
+s_tran.AWREF,
+s_tran.AWTYP,
+s_tran.BALANCE,
+s_tran.BLDAT,
+s_tran.BRSCH,
+s_tran.BSCHL,
+s_tran.BSTAT,
+s_tran.BTTYPE,
+s_tran.BUDAT,
+s_tran.BUZEI,
+s_tran.BWKEY,
+s_tran.BWTAR,
+s_tran.BZDAT,
+s_tran.BZIRK,
+s_tran.DEPR_PERIOD,
+s_tran.DRCRK,
+s_tran.EBELN,
+s_tran.EBELP,
+s_tran.FBUDA,
+s_tran.FKART,
+s_tran.GKOAR,
+s_tran.GKONT,
+s_tran.HBKID,
+s_tran.HKTID,
+s_tran.HPEINH,
+s_tran.KDAUF,
+s_tran.KDGRP,
+s_tran.KDPOS,
+s_tran.KOART,
+s_tran.KONZS,
+s_tran.KPEINH,
+s_tran.KTOP2,
+s_tran.KUNRE,
+s_tran.KUNWE,
+s_tran.LAND1,
+s_tran.LINETYPE,
+s_tran.LOKKT,
+s_tran.LSTAR,
+s_tran.MAT_KDAUF,
+s_tran.MAT_KDPOS,
+s_tran.MAT_LIFNR,
+s_tran.MAT_PS_POSID,
+s_tran.MAT_PSPNR,
+s_tran.MATKL,
+s_tran.MATNR_COPA,
+s_tran.MLAST,
+s_tran.MOVCAT,
+s_tran.MWSKZ,
+s_tran.OBJNR,
+s_tran.PERNR,
+s_tran.POPER,
+s_tran.PRCTR,
+s_tran.PS_PSP_PNR,
+s_tran.QUANTITY,
+s_tran.RASSC,
+s_tran.RBEST,
+s_tran.REBZG,
+s_tran.REBZJ,
+s_tran.REBZT,
+s_tran.REBZZ,
+s_tran.RFAREA,
+s_tran.RHCUR,
+s_tran.RKCUR,
+s_tran.RLDNR,
+s_tran.RUNIT,
+s_tran.RWCUR,
+s_tran.RYEAR,
+s_tran.SBUSA,
+s_tran.SCNTR,
+s_tran.SCOPE,
+s_tran.SEGMENT,
+s_tran.SGTXT,
+s_tran.SOBKZ,
+s_tran.TIMESTAMP,
+s_tran.TURNOVER,
+s_tran.UMSKZ,
+s_tran.USNAM,
+s_tran.VPRSV,
+s_tran.VRGNG,
+s_tran.XOPVW,
+s_tran.XREVERSED,
+s_tran.XREVERSING,
+s_tran.XTRUEREV,
+s_tran.XVABG_PN,
+s_tran.ZUONR,
+s_tran.RRCTY,
+'SAP' as SRC_SYS_ID,
+IFF(DRCRK='H',-CREDIT,DEBIT) SAP_AMOUNT,
+IFF(d_glh_edw1.L4_TXTLG = 'Stockholder''s equity' OR d_glh_edw1.L4_TXTLG = 'Revenue' OR d_glh_edw1.L4_TXTLG = 'Liabilities' OR  d_glh_edw1.L4_TXTLG = 'Non-Operating (Inc)/Exp',IFF(DRCRK='H',CREDIT,-DEBIT),IFF(DRCRK='H',-CREDIT,DEBIT)) AS SIGNED_AMOUNT,
+$load_id$ AS LOAD_ID,
+CURRENT_TIMESTAMP CREATE_DT,
+NULL UPDATE_DT
+from
+$db_name$."STAGE"."0FI_ACDOCA_20" s_tran 
+left outer join
+$db_name$."DATA_MART"."DIM_GL_ACC_MASTER" d_acc
+on s_tran.KTOPL = d_acc.KTOPL and s_tran.RACCT = d_acc.SAKNR
+left outer join
+$db_name$."DATA_MART"."DIM_COST_CNTR_MASTER" d_ccr
+on s_tran.KOKRS = d_ccr.KOKRS and s_tran.RCNTR = d_ccr.KOSTL and ( IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) >=  d_ccr.START_DT AND  IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) <=  d_ccr.END_DT)
+left outer join
+$db_name$."DATA_MART"."DIM_CUST" d_cus
+on s_tran.KUNNR = d_cus.KUNNR
+left outer join
+$db_name$."DATA_MART"."DIM_VENDOR" d_ven
+on s_tran.LIFNR = d_ven.LIFNR
+left outer join
+$db_name$."DATA_MART"."DIM_COMPANY_CD" d_ccd  --7113024 7112820
+on s_tran.RBUKRS = d_ccd.BUKRS
+left outer join
+$db_name$."DATA_MART"."DIM_PROFIT_CTR_TEXT" d_pcr
+on s_tran.KOKRS = d_pcr.KOKRS and s_tran.PRCTR = d_pcr.PRCTR and ( IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) >=  d_pcr.START_DT AND  IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) <=  d_pcr.END_DT)
+left outer join
+$db_name$."DATA_MART"."DIM_GL_ACCOUNT_HIER" d_glh_secr
+on d_glh_secr.KTOPL = s_tran.KTOPL and d_glh_secr.HIER_NAME = 'SECR' and d_glh_secr.SAKNR = s_tran.RACCT and ( IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) >=  d_glh_secr.START_DT AND  IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) <=  d_glh_secr.END_DT)
+left outer join
+$db_name$."DATA_MART"."DIM_GL_ACCOUNT_HIER" d_glh_edw1
+on d_glh_edw1.KTOPL = s_tran.KTOPL and d_glh_edw1.HIER_NAME = 'EDW1' and d_glh_edw1.SAKNR = s_tran.RACCT and ( IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) >=  d_glh_edw1.START_DT AND  IFF(s_tran.BUDAT IS NULL,GJAHR||'-01-01',s_tran.BUDAT) <=  d_glh_edw1.END_DT)
+left outer join
+$db_name$."DATA_MART"."DIM_DATE" d_dt
+on s_tran.BUDAT = d_dt.DATE_COLUMN
+left outer join
+$db_name$."DATA_MART".DIM_FI_DOC_HEADER d_hd
+on s_tran.RBUKRS = d_hd.BUKRS and s_tran.BELNR = d_hd.BELNR and s_tran.GJAHR = d_hd.GJAHR
+where s_tran.load_id > (SELECT IFNULL(max(load_id),0) from $db_name$."DATA_MART"."FACT_FINANCE_TRANSACTION");
+
+--- Populate Missing vendor line items 
+  UPDATE $db_name$."DATA_MART"."FACT_FINANCE_TRANSACTION_TEMP" f
+  SET f.LIFNR = get_vendor.LIFNR, f.dim_vendor_sk = get_vendor.dim_vendor_sk
+  FROM
+  (
+    SELECT stg.LIFNR,BSCHL,RLDNR,RBUKRS,GJAHR,BELNR,CURTYPE,KOART,DOCLN,KOKRS,PERIV,FISCYEARPER,BLART,dv.dim_vendor_sk
+    FROM $db_name$."STAGE"."0FI_ACDOCA_20" stg
+    LEFT OUTER JOIN $db_name$."DATA_MART"."DIM_VENDOR" dv
+    ON stg.LIFNR = dv.LIFNR    
+    where KOART = 'K'
+  ) get_vendor
+  WHERE f.BELNR = get_vendor.BELNR
+    AND f.RBUKRS = get_vendor.RBUKRS
+    AND f.GJAHR = get_vendor.GJAHR
+    AND f.CURTYPE = get_vendor.CURTYPE
+    AND f.KOKRS = get_vendor.KOKRS
+    AND f.PERIV = get_vendor.PERIV
+    AND f.FISCYEARPER = get_vendor.FISCYEARPER
+    AND f.BLART = get_vendor.BLART  
+    AND f.KOART <> 'K';
+
+---  Merge Data loaded in temporary table into the FACT table.
+merge into $db_name$."DATA_MART"."FACT_FINANCE_TRANSACTION" f using $db_name$."DATA_MART"."FACT_FINANCE_TRANSACTION_TEMP" src on 
+    f.KOKRS=src.KOKRS and
+    f.PERIV=src.PERIV and 
+    f.FISCYEARPER=src.FISCYEARPER and
+    f.BLART=src.BLART and
+    f.RBUKRS=src.RBUKRS and
+    f.GJAHR=src.GJAHR and
+    f.BELNR=src.BELNR and
+    f.DOCLN=src.DOCLN and
+    f.CURTYPE=src.CURTYPE
+    when matched then update set f.SAP_AMOUNT = src.SAP_AMOUNT, f.SIGNED_AMOUNT = src.SIGNED_AMOUNT, f.UPDATE_DT = CURRENT_TIMESTAMP
+    when not matched then insert
+    (DIM_DATE_SK,
+DIM_GL_ACC_MASTER_SK,
+DIM_GL_ACCOUNT_HIER_SECR_SK,
+DIM_GL_ACCOUNT_HIER_EDW1_SK,
+DIM_COST_CNTR_MASTER_SK,
+DIM_COST_CNTR_HIER_SK,
+DIM_CUST_SK,
+DIM_CUST_SALES_SK,
+DIM_CUST_COMPC_SK,
+DIM_VENDOR_SK,
+DIM_VENDOR_COMPC_SK,
+DIM_WBS_ELMNT_MASTER_SK,
+DIM_MAT_MASTER_SK,
+DIM_MAT_SALES_SK,
+DIM_MAT_PLANT_SK,
+DIM_COMPANY_CD_SK,
+DIM_PROFIT_CTR_TEXT_SK,
+DIM_FI_DOC_HEADER_SK,
+KOKRS,
+RCNTR,
+PERIV,
+FISCYEARPER,
+BLART,
+RBUKRS,
+GJAHR,
+BELNR,
+DOCLN,
+CURTYPE,
+KTOPL,
+RACCT,
+KUNNR,
+VKORG,
+VTWEG,
+SPART,
+LIFNR,
+PS_POSID,
+PS_PSPID,
+MATNR,
+WERKS,
+ACCAS,
+ACCASTY,
+AFABE,
+ANBWA,
+ANLN1,
+ANLN2,
+AUFNR,
+AUGBL,
+AUGDT,
+AUGGJ,
+AUTYP,
+AWITEM,
+AWREF,
+AWTYP,
+BALANCE,
+BLDAT,
+BRSCH,
+BSCHL,
+BSTAT,
+BTTYPE,
+BUDAT,
+BUZEI,
+BWKEY,
+BWTAR,
+BZDAT,
+BZIRK,
+DEPR_PERIOD,
+DRCRK,
+EBELN,
+EBELP,
+FBUDA,
+FKART,
+GKOAR,
+GKONT,
+HBKID,
+HKTID,
+HPEINH,
+KDAUF,
+KDGRP,
+KDPOS,
+KOART,
+KONZS,
+KPEINH,
+KTOP2,
+KUNRE,
+KUNWE,
+LAND1,
+LINETYPE,
+LOKKT,
+LSTAR,
+MAT_KDAUF,
+MAT_KDPOS,
+MAT_LIFNR,
+MAT_PS_POSID,
+MAT_PSPNR,
+MATKL,
+MATNR_COPA,
+MLAST,
+MOVCAT,
+MWSKZ,
+OBJNR,
+PERNR,
+POPER,
+PRCTR,
+PS_PSP_PNR,
+QUANTITY,
+RASSC,
+RBEST,
+REBZG,
+REBZJ,
+REBZT,
+REBZZ,
+RFAREA,
+RHCUR,
+RKCUR,
+RLDNR,
+RUNIT,
+RWCUR,
+RYEAR,
+SBUSA,
+SCNTR,
+SCOPE,
+SEGMENT,
+SGTXT,
+SOBKZ,
+TIMESTAMP,
+TURNOVER,
+UMSKZ,
+USNAM,
+VPRSV,
+VRGNG,
+XOPVW,
+XREVERSED,
+XREVERSING,
+XTRUEREV,
+XVABG_PN,
+ZUONR,
+RRCTY,
+SRC_SYS_ID,
+SAP_AMOUNT,
+SIGNED_AMOUNT,
+LOAD_ID,
+CREATE_DT)
+values
+(
+src.DIM_DATE_SK,
+src.DIM_GL_ACC_MASTER_SK,
+src.DIM_GL_ACCOUNT_HIER_SECR_SK,
+src.DIM_GL_ACCOUNT_HIER_EDW1_SK,
+src.DIM_COST_CNTR_MASTER_SK,
+src.DIM_COST_CNTR_HIER_SK,
+src.DIM_CUST_SK,
+src.DIM_CUST_SALES_SK,
+src.DIM_CUST_COMPC_SK,
+src.DIM_VENDOR_SK,
+src.DIM_VENDOR_COMPC_SK,
+src.DIM_WBS_ELMNT_MASTER_SK,
+src.DIM_MAT_MASTER_SK,
+src.DIM_MAT_SALES_SK,
+src.DIM_MAT_PLANT_SK,
+src.DIM_COMPANY_CD_SK,
+src.DIM_PROFIT_CTR_TEXT_SK,
+src.DIM_FI_DOC_HEADER_SK,
+src.KOKRS,
+src.RCNTR,
+src.PERIV,
+src.FISCYEARPER,
+src.BLART,
+src.RBUKRS,
+src.GJAHR,
+src.BELNR,
+src.DOCLN,
+src.CURTYPE,
+src.KTOPL,
+src.RACCT,
+src.KUNNR,
+src.VKORG,
+src.VTWEG,
+src.SPART,
+src.LIFNR,
+src.PS_POSID,
+src.PS_PSPID,
+src.MATNR,
+src.WERKS,
+src.ACCAS,
+src.ACCASTY,
+src.AFABE,
+src.ANBWA,
+src.ANLN1,
+src.ANLN2,
+src.AUFNR,
+src.AUGBL,
+src.AUGDT,
+src.AUGGJ,
+src.AUTYP,
+src.AWITEM,
+src.AWREF,
+src.AWTYP,
+src.BALANCE,
+src.BLDAT,
+src.BRSCH,
+src.BSCHL,
+src.BSTAT,
+src.BTTYPE,
+src.BUDAT,
+src.BUZEI,
+src.BWKEY,
+src.BWTAR,
+src.BZDAT,
+src.BZIRK,
+src.DEPR_PERIOD,
+src.DRCRK,
+src.EBELN,
+src.EBELP,
+src.FBUDA,
+src.FKART,
+src.GKOAR,
+src.GKONT,
+src.HBKID,
+src.HKTID,
+src.HPEINH,
+src.KDAUF,
+src.KDGRP,
+src.KDPOS,
+src.KOART,
+src.KONZS,
+src.KPEINH,
+src.KTOP2,
+src.KUNRE,
+src.KUNWE,
+src.LAND1,
+src.LINETYPE,
+src.LOKKT,
+src.LSTAR,
+src.MAT_KDAUF,
+src.MAT_KDPOS,
+src.MAT_LIFNR,
+src.MAT_PS_POSID,
+src.MAT_PSPNR,
+src.MATKL,
+src.MATNR_COPA,
+src.MLAST,
+src.MOVCAT,
+src.MWSKZ,
+src.OBJNR,
+src.PERNR,
+src.POPER,
+src.PRCTR,
+src.PS_PSP_PNR,
+src.QUANTITY,
+src.RASSC,
+src.RBEST,
+src.REBZG,
+src.REBZJ,
+src.REBZT,
+src.REBZZ,
+src.RFAREA,
+src.RHCUR,
+src.RKCUR,
+src.RLDNR,
+src.RUNIT,
+src.RWCUR,
+src.RYEAR,
+src.SBUSA,
+src.SCNTR,
+src.SCOPE,
+src.SEGMENT,
+src.SGTXT,
+src.SOBKZ,
+src.TIMESTAMP,
+src.TURNOVER,
+src.UMSKZ,
+src.USNAM,
+src.VPRSV,
+src.VRGNG,
+src.XOPVW,
+src.XREVERSED,
+src.XREVERSING,
+src.XTRUEREV,
+src.XVABG_PN,
+src.ZUONR,
+src.RRCTY,
+src.SRC_SYS_ID,
+src.SAP_AMOUNT,
+src.SIGNED_AMOUNT,
+src.LOAD_ID,
+src.CREATE_DT
+);
+
+/*  Query to update Audit Tables */
+
+update $db_name$."AUDIT"."AUD_TBL_LOAD_STATS"
+ set TBL_LOAD_END_DT = CURRENT_TIMESTAMP,
+ TBL_LOAD_STATUS = 'COMPLETED',
+ RECORDS_LOADED = (select count(1) from $db_name$.DATA_MART."FACT_FINANCE_TRANSACTION"  where LOAD_ID = $load_id$)
+ where LOAD_ID = $load_id$
+ and TABLE_NM = 'FACT_FINANCE_TRANSACTION'
+ and TBL_LOAD_STATUS = 'OPEN';
+
+/*   Query to update GL Account Dimension (EDW1) in the FACT Table */
+
+update
+   "EDW_PRD"."DATA_MART"."FACT_FINANCE_TRANSACTION" f 
+set
+   f.DIM_GL_ACCOUNT_HIER_EDW1_SK = d.DIM_GL_ACCOUNT_HIER_SK
+FROM
+   (
+      select
+         DIM_GL_ACCOUNT_HIER_SK,
+         SAKNR 
+      FROM
+        "EDW_PRD"."DATA_MART".DIM_GL_ACCOUNT_HIER
+      WHERE
+         HIER_NAME = 'EDW1' 
+         AND SAKNR IS NOT NULL 
+         AND END_DT = '9999-12-31' 
+   )
+   d 
+where
+   f.RACCT = d.SAKNR 
+   and f.DIM_GL_ACCOUNT_HIER_EDW1_SK = 0;
+
+/*   Query to update GL Account Dimension( SEC1 ) in the FACT Table */
+
+update
+   "EDW_PRD"."DATA_MART"."FACT_FINANCE_TRANSACTION" f 
+set
+   f.DIM_GL_ACCOUNT_HIER_SECR_SK = d.DIM_GL_ACCOUNT_HIER_SK
+FROM
+   (
+      select
+         DIM_GL_ACCOUNT_HIER_SK,
+         SAKNR 
+      FROM
+        "EDW_PRD"."DATA_MART".DIM_GL_ACCOUNT_HIER
+      WHERE
+         HIER_NAME = 'SEC1' 
+         AND SAKNR IS NOT NULL 
+         AND END_DT = '9999-12-31' 
+   )
+   d 
+where
+   f.RACCT = d.SAKNR 
+   and f.DIM_GL_ACCOUNT_HIER_SECR_SK = 0;
+/*   Query to update Vendor SK in the FACT Table */
+
+update
+   "EDW_PRD"."DATA_MART"."FACT_FINANCE_TRANSACTION" f 
+set
+   f.DIM_VENDOR_SK = d.DIM_VENDOR_SK
+FROM
+   (
+      select
+         DIM_VENDOR_SK,
+         LIFNR 
+      FROM
+        "EDW_PRD"."DATA_MART".DIM_VENDOR
+   )
+   d 
+where
+   f.LIFNR = d.LIFNR
+   and f.DIM_VENDOR_SK = 0;
